@@ -29,71 +29,61 @@ class SemanticDeduplicator:
         """Adds an item to the deduplicated_items_list, or combines it with an existing item if it is similar enough.
         Not currently supported: Extracting multiple items in a single add"""
 
-        original_item_name = item
-
         # Check to see if your items list has any data
         if len(self.deduplicated_items_list) == 0:
-            self.add_item_to_empty_list(item, original_item_name)
+            self.add_item_to_new_list(item)
         else:
-            self.add_item_to_existing_list(item, original_item_name)
+            self.add_item_to_existing_list(item)
 
         print ("")
 
         return
 
-    def add_item_to_empty_list(self, item, original_item_name):
-        # Transform the raw item name to a more standarized format
-        formatted_item_name = self.transform_item_name(item)
-
-        # Get the embedding of the item
-        item_embedding = self.get_embedding(formatted_item_name)
-
-        print (f"{self.action_prefix}Adding '{formatted_item_name}' to fresh dedup list")
-
-        self.add_item_to_deduplicated_list(formatted_item_name, item_embedding, original_item_name)
-
-    def add_item_to_existing_list(self, item, original_item_name):
+    def add_item_to_existing_list(self, item):
         # If your deduplist has data, then check to see if the item is similar to any of the existing items
-        similar_items = self.semantic_search(item)
+        similar_item = self.semantic_search(item)
 
-        if len(similar_items) == 0:
-            self.add_new_item_to_list(item, original_item_name)
+        if similar_item is not None:
+            # If you have a similar item, then combine your candidate item w/ the existing one
+            self.combine_with_existing_item(item, similar_item)
         else:
-            self.combine_with_existing_item(item, similar_items)
+            # If not, add your candidate item to the dedup list
+            self.add_new_item_to_deduplicated_list(item)
 
-    def add_new_item_to_list(self, item, original_item_name):
-        # Transform the raw item name to a more standarized format
-        formatted_item_name = self.transform_item_name(item)
+    def add_item_to_new_list(self, item):
+        self.add_new_item_to_deduplicated_list(item)
 
-        # Get the embedding of the item
-        item_embedding = self.get_embedding(formatted_item_name)
+        return
 
-        self.add_item_to_deduplicated_list(formatted_item_name, item_embedding, original_item_name)
-
-        print (f"{self.action_prefix}No similarities found, added '{formatted_item_name}'")
-
-    def combine_with_existing_item(self, item, similar_items):
+    def combine_with_existing_item(self, item, similar_item):
         # Just taking the top item to make it easy for now.
         # Will edit this later if it becomes an issue
-        top_item = similar_items[0]
 
         # Get the index of the item in the existing list
-        index_of_item_being_edited = next(i for i, item in enumerate(self.deduplicated_items_list) if item['formatted_name'] == top_item)
+        index_of_item_being_edited = next(i for i, item in enumerate(self.deduplicated_items_list) if item['formatted_name'] == similar_item)
         
-        new_item_name = self.combine_items(item, top_item) # Here
+        new_item_name = self.get_new_name_for_combine_items(item, similar_item) # Here
         new_item_vector = self.get_embedding(new_item_name)
 
         self.deduplicated_items_list[index_of_item_being_edited]['formatted_name'] = new_item_name
         self.deduplicated_items_list[index_of_item_being_edited]['item_embedding'] = new_item_vector
         self.deduplicated_items_list[index_of_item_being_edited]['original_items_list'].append(item)
+        self.deduplicated_items_list[index_of_item_being_edited]['num_original_items'] += 1
 
-        print(f"{self.action_prefix}Changed Item {top_item} to {new_item_name}")
+        print(f"{self.action_prefix}Changed Item {similar_item} to {new_item_name}")
 
-    def add_item_to_deduplicated_list(self, formatted_item_name, item_embedding, original_item_name):
+    def add_new_item_to_deduplicated_list(self, item):
+        # Transform the raw item name to a more standarized format
+        formatted_item_name = self.transform_item_name(item)
+
+        # Get the embedding of the item
+        item_embedding = self.get_embedding(formatted_item_name)
+
         self.deduplicated_items_list.append({
             'formatted_name' : formatted_item_name,
             'item_embedding' : item_embedding,
-            'original_items_list' : [original_item_name] # This will hold more names in the future
+            'original_items_list' : [item], # This will hold more names in the future,
+            'num_original_items' : 1
         })
         return
     
@@ -142,7 +132,7 @@ class SemanticDeduplicator:
         return completion.choices[0].message['content']
 
 
-    def combine_items(self, item, found_item):
+    def get_new_name_for_combine_items(self, item, found_item):
         system_prompt = f"""
         Your goal is to combine two different similar items together. They have been deemed similar and should be comebined.
         Example: "I went to the park" & "I went to outside" > "I went outside"
@@ -173,19 +163,17 @@ class SemanticDeduplicator:
         return new_item_name_formatted
 
     def delete_item(self, item):
-        similarities = self.semantic_search(item)
+        similar_item = self.semantic_search(item)
 
-        if len(similarities) == 0:
+        if similar_item is None:
             print ("No item found to delete")
 
         else:
-            top_item = similarities[0]
-
-            index_of_item_being_deleted = next(i for i, item in enumerate(self.deduplicated_items_list) if item['formatted_name'] == top_item)
+            index_of_item_being_deleted = next(i for i, item in enumerate(self.deduplicated_items_list) if item['formatted_name'] == similar_item)
 
             self.deduplicated_items_list.pop(index_of_item_being_deleted)
             
-            print(f"Droped item: {top_item}")
+            print(f"Droped item: {similar_item}")
 
         return
     
@@ -275,9 +263,13 @@ class SemanticDeduplicator:
             llm_sim = int(self.get_llm_similarity(item, similar_item)) / 100
             print(f"Sim - LLM:{llm_sim}/Cos:{cosine_similarities[index]:.2f}, |{item}| & |{similar_item}|")
             if llm_sim >= self.final_similarity_threshold:
-                similarities.append((similar_item))
+                similarities.append(similar_item)
         
-        return sorted(similarities, key=lambda x: x[1], reverse=True)
+        if similarities:
+            # Only returning top similarity for now to reduce complexity
+            return sorted(similarities, key=lambda x: x[1], reverse=True)[0]
+        else:
+            return None
 
 if __name__ == '__main__':
 
@@ -295,12 +287,12 @@ if __name__ == '__main__':
     sd.add_item("Please speed up your app, it is very slow")
     sd.add_item("I want dark mode")
     sd.add_item("I wish there was a darker version of your app")
-    sd.add_item("I wish there was a button to change my settings")
-    sd.add_item("How do I change my profile picture?")
-    sd.add_item("Your app is awesome! But I wish I could invite my friends easily")
-    sd.add_items(["I don't see a spot to put my credit card", "I can't figure out how to invite my friends"])
-    # sd.delete_item("users have been requesting dark mode")
+    # sd.add_item("I wish there was a button to change my settings")
+    # sd.add_item("How do I change my profile picture?")
+    # sd.add_item("Your app is awesome! But I wish I could invite my friends easily")
+    # sd.add_items(["I don't see a spot to put my credit card", "I can't figure out how to invite my friends"])
+    sd.delete_item("users have been requesting dark mode")
 
     print ("\nItems List")
     for i, item in enumerate(sd.deduplicated_items_list):
-        print (f"""Item #{i+1} \nFormatted Name: {item['formatted_name']} \nOld Names: {item['original_items_list']}\n\n""")
+        print (f"""Item #{i+1} \nFormatted Name: {item['formatted_name']} \nOld Names: {item['original_items_list']}\nOriginal Item Count: {item['num_original_items']}\n""")
