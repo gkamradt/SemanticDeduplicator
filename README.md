@@ -20,9 +20,8 @@
 [black]: https://github.com/psf/black
 
 ## Overview
+
 One of the most annoying parts of gathering strings for a list is deduplicating them. Let's fix this
-
-
 
     sd = SemanticDeduplicator(similarity_background="You are helping me deduplicate feature requests for a product")
 
@@ -31,7 +30,6 @@ One of the most annoying parts of gathering strings for a list is deduplicating 
     sd.add_item("I wish there was a darker version of your app")
 
     # >> Improve application speed, Implement Dark Mode
-
 
 ## Installation
 
@@ -61,7 +59,6 @@ If you encounter any problems,
 please [file an issue] along with a detailed description.
 
 ## Credits
-
 
 [pypi]: https://pypi.org/
 [file an issue]: https://github.com/gkamradt/semantic-deduplicator/issues
