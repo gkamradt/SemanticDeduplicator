@@ -45,8 +45,75 @@ Please see the [Command-line Reference] for details.
 
 ## Contributing
 
-Contributions are very welcome.
-To learn more, see the [Contributor Guide].
+Contributions are very welcome! We value your time and effort to improve our project.
+
+1. **Fork the Repository**: Start by forking the repository and cloning your fork locally.
+
+    ```bash
+    git clone https://github.com/YOUR_USERNAME/PROJECT_NAME.git
+    ```
+
+2. **Set Up Environment**: Ensure you have all the necessary development dependencies installed. If the project uses Poetry, run:
+
+    ```bash
+    poetry install
+    ```
+
+3. **Install pre-commit Hooks**: Install pre-commit hooks to ensure code quality.
+
+    ```bash
+    pip install pre-commit  # or use 'poetry add --dev pre-commit' if using Poetry
+    pre-commit install
+    ```
+
+    This will install hooks defined in `.pre-commit-config.yaml`.
+
+4. **Create a Branch**: Always make a new branch for your work.
+
+    ```bash
+    git checkout -b feature/your-feature-name
+    ```
+
+5. **Write Code**: Write your code and try to adhere to the style guidelines and best practices of the project. Don't forget to add or update tests and documentation.
+
+6. **Run Tests**: Ensure all tests pass.
+
+    ```bash
+    # Run this command if the project uses pytest, for example
+    pytest
+    ```
+
+7. **Commit Your Changes**: Commit your changes with a meaningful commit message.
+
+    ```bash
+    git commit -m "Add a feature"
+    ```
+
+8. **Push**: Push your changes to your fork.
+
+    ```bash
+    git push origin feature/your-feature-name
+    ```
+
+9. **Create a Pull Request**: Go to the original project repository and create a new pull request. Provide a meaningful description and request a review.
+
+### Additional Guidelines
+
+- Please make sure your code is well-formatted and adheres to the project's coding standards (typically PEP-8 for Python projects).
+
+- If you're adding a new feature, please also consider writing and running tests to ensure everything is working as expected.
+
+- Make sure you update the documentation to reflect your changes.
+
+- Please be respectful of other contributors and maintainers, keeping discussions polite and sticking to the facts.
+
+### Questions?
+
+If you have any questions or need help with your contributions, feel free to reach out by opening an issue or reaching out to the maintainers.
+
+To learn more about making a contribution, please see the [Contributor Guide](LINK_TO_CONTRIBUTOR_GUIDE).
+
+
 
 ## License
 
