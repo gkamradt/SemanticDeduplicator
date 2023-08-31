@@ -1,3 +1,14 @@
+.mypy_cache/
+/.coverage
+/.coverage.*
+/.nox/
+/.python-version
+/.pytype/
+/dist/
+/docs/_build/
+/src/*.egg-info/
+__pycache__/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -137,7 +148,7 @@ venv.bak/
 
 # mkdocs documentation
 /site
-
+.idea/*
 # mypy
 .mypy_cache/
 .dmypy.json

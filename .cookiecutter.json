@@ -1,0 +1,14 @@
+{
+  "_output_dir": "/Users/ryanbrandt/git/SemanticDeduplicator",
+  "_template": "gh:cjolowicz/cookiecutter-hypermodern-python",
+  "author": "Greg Kamradt",
+  "copyright_year": "2023",
+  "development_status": "Development Status :: 2 - Pre-Alpha",
+  "email": "mail@claudiojolowicz.com",
+  "friendly_name": "Semantic Deduplicator",
+  "github_user": "gkamradt",
+  "license": "MIT",
+  "package_name": "semantic_deduplicator",
+  "project_name": "semantic-deduplicator",
+  "version": "0.0.0"
+}
