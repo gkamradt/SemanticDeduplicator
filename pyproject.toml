@@ -1,26 +1,30 @@
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
 
-[project]
+[tool.poetry]
 name = "semantic_deduplicator"
-version = "0.0.10"
-authors = [{ name="Greg Kamradt", email="contact@dataindependent.com", twitter="https://twitter.com/GregKamradt"}]
+version = "0.0.2"
 description = "A simple python package to deduplicate items based on their semantic meaning"
+authors = ["Greg Kamradt <contact@dataindependent.com>"]
 readme = "README.md"
-requires-python = ">=3.9"
+license = "MIT"
+homepage = "https://github.com/gkamradt/SemanticDeduplicator"
+repository = "https://github.com/gkamradt/SemanticDeduplicator"
+documentation = ""
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
 
-dependencies = [
-    "numpy",
-    "openai",
-    "python-dotenv"
-]
+[tool.poetry.dependencies]
+python = "^3.9.13"
+numpy = "^1.21.6"
+openai = "^0.27.9"
+python-dotenv = "^1.0.0"
 
-[project.urls]
-"Homepage" = "https://github.com/gkamradt/SemanticDeduplicator"
-"Bug Tracker" = "https://github.com/gkamradt/SemanticDeduplicator/issues"
+[tool.poetry.dev-dependencies]
+pytest = "^7.1.2"
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.2"

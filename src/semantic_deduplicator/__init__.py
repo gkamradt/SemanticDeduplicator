@@ -1,1 +1,1 @@
-from .main import SemanticDeduplicator
+from .main import SemanticDeduplicator, DeduplicatedItem

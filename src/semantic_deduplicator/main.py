@@ -37,7 +37,6 @@ class DeduplicatedItem:
         
         self.name = self.transform_item_name(background_context, new_item_name)
         self.update_item_embedding()
-        return
     
     def update_item_embedding(self):
         """
@@ -75,11 +74,11 @@ class DeduplicatedItem:
         # Use the provided item_name if it's not None, otherwise use the first item from original_input_list
         item_to_transform = item_name if item_name is not None else self.original_input_list[0]
 
-        human_propmt = f"""
+        human_prompt = f"""
         Here is my item: {item_to_transform}
         """
 
-        new_item_name = call_llm(system_prompt=system_prompt, human_prompt=human_propmt)
+        new_item_name = call_llm(system_prompt=system_prompt, human_prompt=human_prompt)
 
         return new_item_name
 
@@ -126,8 +125,6 @@ class SemanticDeduplicator:
                                               background_context=self.background_context)
 
             self._add_item_to_list(potential_item)
-
-        return
     
     def add_single_item(self, item):
         """
@@ -147,8 +144,6 @@ class SemanticDeduplicator:
 
         self._add_item_to_list(potential_item)
 
-        return
-
     def _add_item_to_list(self, item):
         """
         This method takes a DeduplicatedItem and adds it to the 'deduplicated_items_list'. 
@@ -161,8 +156,6 @@ class SemanticDeduplicator:
             self.add_item_to_empty_list(item)
         else:
             self.add_item_to_existing_list(item)
-
-        return
 
     def parse_items_from_raw_item(self, item):
         """
@@ -212,7 +205,6 @@ class SemanticDeduplicator:
 
     def add_item_to_empty_list(self, item_to_add):
         self.add_item_to_deduplicated_list(item_to_add)
-        return
 
     def add_item_to_existing_list(self, item_to_add):
         # If your deduplist has data, then check to see if the item is similar to any of the existing items
@@ -225,8 +217,6 @@ class SemanticDeduplicator:
 
     def add_new_item_to_list(self, item_to_add):
         self.add_item_to_deduplicated_list(item_to_add)
-
-        return
 
     def combine_item_with_existing_item(self, item_to_add, similar_items):
         """
@@ -251,12 +241,9 @@ class SemanticDeduplicator:
 
         top_item.update_item_name(background_context=self.background_context, new_item_name=new_item_name)
         top_item.original_input_list.extend(item_to_add.original_input_list)
-        return
-
+        
     def add_item_to_deduplicated_list(self, item_to_add):
         self.deduplicated_items_list.append(item_to_add)
-
-        return
     
     def add_single_items(self, items: List[str]):
         """
@@ -269,8 +256,6 @@ class SemanticDeduplicator:
         
         for item in items:
             self.add_single_item(item)
-        
-        return
 
     def get_combined_items_name(self, item_to_add, existing_item):
         """
@@ -303,12 +288,12 @@ class SemanticDeduplicator:
         No not include any labels, or double-quotes
         """
 
-        human_propmt = f"""
+        human_prompt = f"""
         New Item: {item_to_add.name}
         Existing Item: {existing_item.name}
         """
 
-        new_item_name = call_llm(system_prompt=system_prompt, human_prompt=human_propmt)
+        new_item_name = call_llm(system_prompt=system_prompt, human_prompt=human_prompt)
 
         return new_item_name
 
@@ -326,9 +311,6 @@ class SemanticDeduplicator:
             index_of_item_being_deleted = next(i for i, item in enumerate(self.deduplicated_items_list) if item.name == top_item.name)
 
             self.deduplicated_items_list.pop(index_of_item_being_deleted)
-        
-
-        return
     
     def cosine_similarity(self, item, existing_item):
         # Calculate the dot product of the two vectors
@@ -385,13 +367,13 @@ class SemanticDeduplicator:
         "I want ice cream" > "the horses name is bob" = 0
         """
 
-        human_propmt = f"""
+        human_prompt = f"""
         Item #1: {item_1.name}
         Item #2: {item_2.name}
         """
 
         llm_similarity = call_llm(system_prompt=system_prompt,
-                                      human_prompt=human_propmt,
+                                      human_prompt=human_prompt,
                                       model=self.similarity_model)
         
         llm_similarity = int(llm_similarity)
