@@ -23,6 +23,30 @@ SemanticDeduplicators's goal is to ease the pain of list management.
 
 This package currently only works with OpenAI models. There are more on the roadmap
 
+## Quick Start
+```python
+from semantic_deduplicator import SemanticDeduplicator
+
+sd = SemanticDeduplicator(
+    background_context="""
+        You are helping me consolidate my to do list
+    """,
+    openai_api_key = '...' # Or set env variable
+)
+
+sd.add_single_item("Go to the grocery store")
+sd.add_single_item("Pick up laundry")
+sd.add_single_item("Head over to the grocery store to get food")
+
+sd.deduplicated_items_list
+
+>> [DeduplicatedItem("Purchase groceries"), DeduplicatedItem("Collect laundry")]
+
+sd.get_formatted_deduplicated_list(type='string_list')
+
+>> "Purchase groceries, Collect laundry"
+```
+
 ## Community
 To ask questions, share ideas, or just chat with like-minded developers, join me on [Twitter](https://twitter.com/gregkamradt)!
 

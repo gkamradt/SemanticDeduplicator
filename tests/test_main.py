@@ -1,4 +1,5 @@
 from semantic_deduplicator import SemanticDeduplicator, DeduplicatedItem
+import json
 
 def test_simple_deduplication_product_feedback():
     sd = SemanticDeduplicator(
@@ -83,3 +84,22 @@ def test_add_deduplication_items():
 def test_simple_duplicated_item_create():
     di = DeduplicatedItem("My test item")
     assert len(di.item_embedding) > 0
+
+def test_get_formatted_deduplicated_list():
+    sd = SemanticDeduplicator(
+        background_context="""
+            You are helping me consolidate my to do list
+        """
+    )
+
+    sd.add_single_item("Go to the grocery store")
+    sd.add_single_item("Pick up laundry")
+    sd.add_single_item("Head over to the grocery store to get food")
+
+    string_output = sd.get_formatted_deduplicated_list(get_type="string_list")
+    dict_output = sd.get_formatted_deduplicated_list(get_type="dict_list")
+    json_output = sd.get_formatted_deduplicated_list(get_type="json")
+
+    assert string_output.count(',') == 1
+    assert len(dict_output) == 2
+    assert len(json.loads(json_output)) == 2    

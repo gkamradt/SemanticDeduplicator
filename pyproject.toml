@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "semantic_deduplicator"
-version = "0.0.2"
+version = "0.0.3"
 description = "A simple python package to deduplicate items based on their semantic meaning"
 authors = ["Greg Kamradt <contact@dataindependent.com>"]
 readme = "README.md"

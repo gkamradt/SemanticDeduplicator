@@ -4,6 +4,7 @@ from typing import List
 import os
 from dotenv import load_dotenv
 import warnings
+import json
 from .utils import call_llm, get_embedding
 
 load_dotenv()
@@ -408,9 +409,23 @@ class SemanticDeduplicator:
         # Return the similar items in descending order of similarity (most similar at the top)
         return sorted(similarities, key=lambda x: x[1], reverse=True)
     
-    def print_deduplicated_list(self):
-        """Print the list to see what the contents are"""
+    def get_formatted_deduplicated_list(self, get_type="string_list"):
+        """
+        Pretty print the list contents
+        Args:
+            get_type (str): The type of print format. Defaults to "string_list".
+                "string_list": Joins the items together in a comma separated string
+                "dict_list": Prints the list of deduplicated items as a list of dictionaries, with each dictionary representing an item and the original values as a list of strings
+                "json": Prints the list of deduplicated items in JSON format.
+        """
+        if get_type == "string_list":
+            return ', '.join([item.name for item in self.deduplicated_items_list])
 
-        print ("\nItems List")
-        for i, item in enumerate(self.deduplicated_items_list):
-            print (f"""Item #{i+1} \nFormatted Name: {item.name} \nOld Names: {item.original_input_list}\n\n""")
+        elif get_type == "dict_list":
+            return [{'Formatted Name': item.name, 'Original Names': item.original_input_list} for item in self.deduplicated_items_list]
+
+        elif get_type == "json":
+            return json.dumps([{'Formatted Name': item.name, 'Original Names': item.original_input_list} for item in self.deduplicated_items_list])
+
+        else:
+            raise ValueError(f"Invalid get_type: {get_type}. Expected one of: 'string_list', 'dict_list', 'json'")
