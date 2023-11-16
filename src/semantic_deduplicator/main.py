@@ -87,7 +87,7 @@ class DeduplicatedItem:
         return f'DeduplicatedItem("{self.name}")'
 
 class SemanticDeduplicator:
-    def __init__(self, background_context="", llm_similarity_threshold=0.8, cosine_similarity_threshold=.75, openai_api_key = ''):
+    def __init__(self, background_context="", llm_similarity_threshold=0.8, cosine_similarity_threshold=.75, openai_api_key='', similarity_model='gpt-4'):
         """
         Initializes the SemanticDeduplicator class.
 
@@ -96,20 +96,21 @@ class SemanticDeduplicator:
             llm_similarity_threshold (float): The final threshold for similarity. Defaults to 0.8.
             cosine_similarity_threshold (float): The threshold for cosine similarity. Defaults to 0.75.
             openai_api_key (str): The API key for OpenAI. Defaults to an empty string.
+            similarity_model (str): The name of the similarity model to be used. Defaults to 'gpt-4'.
         """
         
         self.deduplicated_items_list = []
         self.cosine_similarity_threshold = cosine_similarity_threshold
         self.llm_similarity_threshold = llm_similarity_threshold
-        self.background_context=background_context
-        self.similarity_model = 'gpt-4'
+        self.background_context = background_context
+        self.similarity_model = similarity_model  # Use the provided similarity_model
 
         # If the API key is provided during initialization, use it. Else, get it from the environment variable.
         openai.api_key = openai_api_key or os.getenv('OPENAI_API_KEY')
         if not openai.api_key:
             raise ValueError("OpenAI API key must be provided or set in the environment variable 'OPENAI_API_KEY'")
         
-        if background_context=="":
+        if background_context == "":
             warnings.warn("The 'background_context' variable is empty. This is used to inform the language model what type of items it's parsing and extracting. It's recommended to provide context on your data for better results. See https://github.com/gkamradt/SemanticDeduplicator for more information")
 
     def add_item(self, item):
